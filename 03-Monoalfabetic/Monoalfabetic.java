@@ -11,10 +11,25 @@ public class Monoalfabetic {
 
     public static void main(String[] args) {
 
-        String test = "Test 01 àrbitre, coixí, Perímetre";
+        String[] test = {"Test 01 àrbitre, coixí, Perímetre", 
+                        "Test 02 Taüll, DÍA", "Test 03 Peça, Òrrius, Bòvila"};
+        String[] xifrat = new String[test.length];
+
+        char[] permutat =  permutaAlfabet(MAJUSCULES);
+        System.out.println(LLETRES);
+        System.out.println(permutat);
+        System.out.println("Xifratge:");
+        for (int i = 0; i < test.length; i++) {
+            xifrat[i] =  xifraMonoAlfa(permutat, test[i]);
+            System.out.println(xifrat[i]);
+        }
+        System.out.println("Desxifratge:");
+        for (int i = 0; i < test.length; i++) {
+            xifrat[i] = desxifraMonoAlfa(permutat, xifrat[i]);
+            System.out.println(xifrat[i]);
+        }
+
         
-        System.out.println(permutaAlfabet(MAJUSCULES)); 
-        xifraMonoAlfa(permutaAlfabet(MAJUSCULES), test);
     }
 
     public static int buscarLletra(char lletra, char[] alfabet){
@@ -27,7 +42,7 @@ public class Monoalfabetic {
     }
 
     //tiene que ser privado
-    public static char[] permutaAlfabet(char[] MAJUSCULES){
+    private  static char[] permutaAlfabet(char[] MAJUSCULES){
 
         //de charArray a List(arrayList) y despues de list a charArray
         ArrayList<Character> lista = new ArrayList<>();
@@ -50,32 +65,53 @@ public class Monoalfabetic {
 
         //xifrem el text amb el permutat 
         int indice;
-        String resultat = String.valueOf(permutat); //para poder añadirlo al string
+        String resultat = "";
 
         for (int i = 0; i < texto.length(); i++) {
             char caracter = texto.charAt(i);
             //va por indice hay que aceder al alfa normal para poder encontral que caracter es en permutat
             //BUSCCAMOS EL INDICE
             indice = buscarLletra(caracter, MAJUSCULES);
-            //si no lo encuentra -- FALTA TENER EN CUENTA MAYUS Y MINUS
+            
             if(Character.isLowerCase(caracter)){
-
+                //se pasa a mayus, despues lo volveremos a pasar a minus y se guarda
+                indice = buscarLletra(Character.toUpperCase(caracter), MAJUSCULES);
                 //habra que volvera a pasar a lowercase 
+                resultat += Character.toLowerCase(permutat[indice]);
+            }else if( indice == -1){
+                resultat += caracter; //no será un caracter
+            }else{//es mayusculas
+                //lo guardamos para retornarlo al final
+                resultat += permutat[indice];
             }
-            if(indice == -1){
-                resultat += caracter;
-            }
-            //lo guardamos para retornarlo al final
-            resultat += permutat[indice];
-
+            
         }
 
         return resultat;
     }
 
-    public static String desxifraMonoAlfa(){
+    public static String desxifraMonoAlfa(char[] permutat, String xifrat){
+        int indice;
+        String resultat = "";
 
-        return "";
+        for (int i = 0; i < xifrat.length(); i++) {
+            char caracter = xifrat.charAt(i);
+
+            indice = buscarLletra(caracter, permutat);
+
+            if(Character.isLowerCase(caracter)){
+
+                indice = buscarLletra(Character.toUpperCase(caracter), permutat);
+                
+                resultat += Character.toLowerCase(MAJUSCULES[indice]);
+            }else if( indice == -1){
+                resultat += caracter; //no será un caracter
+            }else{
+                resultat += MAJUSCULES[indice];
+            }
+        }
+
+        return resultat;
     }
 
 }
