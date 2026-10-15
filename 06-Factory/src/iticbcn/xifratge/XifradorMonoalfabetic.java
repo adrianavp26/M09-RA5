@@ -1,38 +1,24 @@
 package iticbcn.xifratge;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 
 
 
-public class XifradorMonoalfabetic {
-    public static final String LLETRES = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
-    public static final char[] MAJUSCULES = LLETRES.toUpperCase().toCharArray();
+public class XifradorMonoalfabetic implements Xifrador{
 
-    public static void main(String[] args) {
+    private final char[] permutar;
 
-        String[] test = {"Test 01 àrbitre, coixí, Perímetre", 
-                        "Test 02 Taüll, DÍA", "Test 03 Peça, Òrrius, Bòvila"};
-        String[] xifrat = new String[test.length];
+    public final String LLETRES = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
+    public final char[] MAJUSCULES = LLETRES.toUpperCase().toCharArray();
 
-        char[] permutat =  permutaAlfabet(MAJUSCULES);
-        System.out.println(LLETRES);
-        System.out.println(permutat);
-        System.out.println("Xifratge:");
-        for (int i = 0; i < test.length; i++) {
-            xifrat[i] =  xifraMonoAlfa(permutat, test[i]);
-            System.out.println(xifrat[i]);
-        }
-        System.out.println("Desxifratge:");
-        for (int i = 0; i < test.length; i++) {
-            xifrat[i] = desxifraMonoAlfa(permutat, xifrat[i]);
-            System.out.println(xifrat[i]);
-        }
-
-        
+    public XifradorMonoalfabetic(){
+        permutar = permutaAlfabet(MAJUSCULES);
     }
 
-    public static int buscarLletra(char lletra, char[] alfabet){
+
+    public int buscarLletra(char lletra, char[] alfabet){
         for (int i = 0; i < alfabet.length; i++) {
             if(alfabet[i] == lletra){
                 return i;
@@ -41,7 +27,7 @@ public class XifradorMonoalfabetic {
         return -1;
     }
 
-    private  static char[] permutaAlfabet(char[] MAJUSCULES){
+    private char[] permutaAlfabet(char[] MAJUSCULES){
 
         ArrayList<Character> lista = new ArrayList<>();
         for(char caracter : MAJUSCULES){
@@ -59,7 +45,7 @@ public class XifradorMonoalfabetic {
         return resultat;
     }
 
-    public static String xifraMonoAlfa(char[] permutat, String texto){
+    public String xifraMonoAlfa(char[] permutat, String texto){
 
         //xifrem el text amb el permutat 
         int indice;
@@ -85,7 +71,7 @@ public class XifradorMonoalfabetic {
         return resultat;
     }
 
-    public static String desxifraMonoAlfa(char[] permutat, String xifrat){
+    public String desxifraMonoAlfa(char[] permutat, String xifrat){
         int indice;
         String resultat = "";
 
@@ -107,6 +93,28 @@ public class XifradorMonoalfabetic {
         }
 
         return resultat;
+    }
+
+    @Override 
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada{
+        if(clau != null){
+            throw new ClauNoSuportada("Xifratge monoalfabetic no soporta clau != null");
+        }
+
+        String xifrat = xifraMonoAlfa(permutar, msg); 
+        byte[] bytes = xifrat.getBytes(StandardCharsets.UTF_8);
+        
+        return new TextXifrat(bytes);
+    }
+    @Override 
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada{
+        if(clau != null){
+            throw new ClauNoSuportada("Xifratge monoalfabetic no soporta clau != null");
+        }
+
+        String text = xifrat.toString();
+        
+        return desxifraMonoAlfa(permutar, text);
     }
 
 }

@@ -6,42 +6,17 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class XifradorAES {
+public class XifradorAES implements Xifrador{
 
-    public static final String ALGORISME_XIFRAT = "AES";
-    public static final String ALGORISME_HASH = "SHA-256";
-    public static final String FORMAT_AES = "AES/CBC/PKCS5Padding";
+    public final String ALGORISME_XIFRAT = "AES";
+    public final String ALGORISME_HASH = "SHA-256";
+    public final String FORMAT_AES = "AES/CBC/PKCS5Padding";
 
-    private static final int MIDA_IV = 16;
-    private static byte[] iv = new byte[MIDA_IV];
-    private static final String CLAU = "Jhandajndfpow";
+    private final int MIDA_IV = 16;
+    private byte[] iv = new byte[MIDA_IV];
 
 
-    public static void main(String[] args) {
-        
-        String msgs[] = {"Lorem ipsum dicet", "Hola Andrés cómo está tu cuñado", "Àgora ïlla Ôtto"};
-
-        for (int i = 0; i < msgs.length; i++) {
-            String msg = msgs[i];
-
-            byte[] bXifrats = null;
-            String desxifrat = "";
-            try{
-                bXifrats = xifraAES(msg, CLAU);
-                desxifrat = desxifraAES(bXifrats, CLAU);
-            }catch(Exception e){
-                System.err.println("Error de xifrat: " + e.getLocalizedMessage());
-            }
-
-            System.out.println("---------------------------------");
-            System.out.println("Msg: " + msg);
-            System.out.println("Enc: " + new String(bXifrats));
-            System.out.println("DEC: " + desxifrat);
-        }
-        
-    }
-
-    public static byte[] xifraAES(String msg, String clau) throws Exception{
+    public byte[] xifraAES(String msg, String clau) throws Exception{
         //obtenir bytes de l'string
         byte[] bytesMsg = msg.getBytes(StandardCharsets.UTF_8);
         //generar el iv
@@ -64,7 +39,7 @@ public class XifradorAES {
         return resultat;
     }
 
-    public static String desxifraAES(byte[] bMsgXifrat, String clau) throws Exception{
+    public String desxifraAES(byte[] bMsgXifrat, String clau) throws Exception{
 
         //exreu iv
         byte[] ivBytes = extreuIv(bMsgXifrat);
@@ -80,13 +55,13 @@ public class XifradorAES {
         return new String(byteMsg, StandardCharsets.UTF_8);
     }
     //generador de iv
-    public static byte[] generaIv(){
+    public byte[] generaIv(){
         SecureRandom randomSecure = new SecureRandom();
         randomSecure.nextBytes(iv);
         return iv;
     }
     //get de bytesxifrats
-    public static byte[] getBytesXifrats(byte[] bMsgXifrat){
+    public byte[] getBytesXifrats(byte[] bMsgXifrat){
 
         byte[] tamany = new byte[bMsgXifrat.length - MIDA_IV];
         for (int i = 0; i < tamany.length; i++) {
@@ -95,7 +70,7 @@ public class XifradorAES {
         return tamany;
     }
     //extreu  IV
-    public static byte[] extreuIv(byte[] bMsgXifrat){
+    public byte[] extreuIv(byte[] bMsgXifrat){
         byte[] ivExtret = new byte[MIDA_IV];
 
         for (int i = 0; i < ivExtret.length; i++) {
@@ -104,7 +79,7 @@ public class XifradorAES {
         return ivExtret;
     }
     // creació de clau er al cipher
-    public static SecretKeySpec generaHash(String password) throws Exception{
+    public SecretKeySpec generaHash(String password) throws Exception{
         
         MessageDigest md = MessageDigest.getInstance(ALGORISME_HASH);
         byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -112,5 +87,29 @@ public class XifradorAES {
         return new SecretKeySpec(hash, ALGORISME_XIFRAT);
     }
 
+
+    @Override
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada {
+        byte[] bytes = null;
+        try {
+            bytes = xifraAES(msg, clau);
+        } catch (Exception e) {
+            System.err.println("Clau de RotX ha de ser un sencer de 0 a 40");
+            System.exit(1);
+        }
+        return new TextXifrat(bytes);
+    }
+
+    @Override
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada {
+        String desxifrat = null;
+        try {
+            desxifrat = desxifraAES(xifrat.getBytes(), clau);
+        } catch (Exception e) {
+            System.err.println("Clau de RotX ha de ser un sencer de 0 a 40");
+            System.exit(1);
+        }
+        return desxifrat;
+    }
 
 }

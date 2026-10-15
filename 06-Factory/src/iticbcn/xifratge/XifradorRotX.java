@@ -1,10 +1,13 @@
 package iticbcn.xifratge;
-public class XifradorRotX {
 
-    static String lletres = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
-    static char[] minuscules = lletres.toCharArray();
-    static char[] majuscules = lletres.toUpperCase().toCharArray();
+import java.nio.charset.StandardCharsets;
 
+public class XifradorRotX  implements Xifrador{
+
+    String lletres = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
+    char[] minuscules = lletres.toCharArray();
+    char[] majuscules = lletres.toUpperCase().toCharArray();
+/*
     public static void main(String[] args) {
         String[] palabras = {"ABC", "XYZ", "Hola, Mr. calçot", "Perdó, per tu què és?"};
         String[] xifrat = new String[palabras.length];
@@ -30,9 +33,9 @@ public class XifradorRotX {
         forcaBrutaRotX(frase);
         
     }
-
+ */
     //metode per buscar la lletra en el nostre propi alfabet
-    public static int buscarLletra(char lletra, char[] alfabet){
+    public int buscarLletra(char lletra, char[] alfabet){
         for (int i = 0; i < alfabet.length; i++) {
             if(alfabet[i] == lletra){
                 return i;
@@ -41,7 +44,7 @@ public class XifradorRotX {
         return -1;
     }
 
-    public static String xifraRotX(String cadena, int desplaçament){
+    public String xifraRotX(String cadena, int desplaçament){
         String xifrat = "";
 
         int indice;
@@ -63,15 +66,16 @@ public class XifradorRotX {
                 xifrat += lletra;
             }else{
                 //si lo ha encotrado:
-                int nuevoIndice = (indice + desplaçament) % alfabetUtilitzat.length;
+                int despl = desplaçament % alfabetUtilitzat.length;
+                int nuevoIndice = ((indice + despl) + alfabetUtilitzat.length) % alfabetUtilitzat.length;
                 xifrat += alfabetUtilitzat[nuevoIndice];
             }
         }
 
         return xifrat;
     }
-
-    public static String desxifraRotX(String cadena, int desplaçament){
+    
+    public String desxifraRotX(String cadena, int desplaçament){
         String desxifrat = "";
         int indice;
         char[] alfabetUtilitzat;
@@ -92,7 +96,8 @@ public class XifradorRotX {
                 desxifrat += lletra;
             }else{
                 //si lo ha encotrado:
-                int nuevoIndice = ((indice - desplaçament) + alfabetUtilitzat.length) % alfabetUtilitzat.length;
+                int despl = desplaçament % alfabetUtilitzat.length;
+                int nuevoIndice = ((indice - despl) + alfabetUtilitzat.length) % alfabetUtilitzat.length;
                 desxifrat += alfabetUtilitzat[nuevoIndice];
             }
         }
@@ -100,7 +105,7 @@ public class XifradorRotX {
         return desxifrat;
     }
 
-    public static void  forcaBrutaRotX(String cadenaXifrada){
+    public void  forcaBrutaRotX(String cadenaXifrada){
         String resultat;
         System.out.println("Missatge xifrat: " + cadenaXifrada);
 
@@ -110,5 +115,34 @@ public class XifradorRotX {
             System.out.printf("(%d) -> %s%n", i, resultat);
         }
         
+    }
+
+    @Override 
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada{
+        int numeros;
+        try {
+            numeros = Integer.parseInt(clau);
+            
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("la clau de rotX ha de ser un enter");
+        }
+
+        String xifrat = xifraRotX(msg, numeros); 
+        byte[] bytes = xifrat.getBytes(StandardCharsets.UTF_8);
+        
+        return new TextXifrat(bytes);
+    }
+    @Override 
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada{
+        int numeros;
+        try {
+            numeros = Integer.parseInt(clau);
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("la clau de rotX ha de ser un enter");
+        }
+
+        String text = xifrat.toString();
+        
+        return desxifraRotX(text, numeros);
     }
 }

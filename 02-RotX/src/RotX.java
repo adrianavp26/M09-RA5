@@ -16,6 +16,7 @@ public class RotX {
             xifrat[i] = xifraRotX(palabras[i], numero[i]);
             System.out.println(xifrat[i]);
         }
+        
         System.out.println("Desxifrat");
         System.out.println("---------");
         for (int i = 0; i < palabras.length; i++) {
@@ -23,7 +24,7 @@ public class RotX {
             System.out.println(xifrat[i]);
         }
         System.out.println();
-        
+
         String frase = "Úiüht, úiü wx ùxì ív?";
         forcaBrutaRotX(frase);
         

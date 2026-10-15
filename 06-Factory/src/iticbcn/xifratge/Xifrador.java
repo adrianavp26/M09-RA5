@@ -1,11 +1,8 @@
 package iticbcn.xifratge;
 public interface  Xifrador {
-    
-    pubic TextXifrat xifra(String msg, String clau) throws ClauNoSuportada{
-        
-    }
 
-    public String descifra(TextXifrat xifrat, String clau)throes ClauNoSuportada{
-        return "";
-    }
+    //al ser una interfaz los metodos no tienen cuerpo
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada;
+    public String desxifra(TextXifrat xifrat, String clau)throws ClauNoSuportada;
+    
 }

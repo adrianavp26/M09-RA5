@@ -1,6 +1,6 @@
 package iticbcn.xifratge;
 
-public class TextXifratge {
+public class TestXifratge {
     public static void main(String[] args) {
         AlgorismeFactory[] aFactory = {
             new AlgorismeAES(), new AlgorismeMonoalfabetic(),
@@ -36,6 +36,15 @@ public class TextXifratge {
                     TextXifrat tx = null;
                     try{
                         tx = xifrador.xifra(msg, clau);
+                    }catch(ClauNoSuportada e){
+                        System.err.println(e.getLocalizedMessage());
+                    }
+                    System.out.println("TextXifrat: " + tx);
+
+                    String desxifrat = null;
+                    
+                    try{
+                        desxifrat = xifrador.desxifra(tx, clau);
                     }catch(ClauNoSuportada e){
                         System.err.println(e.getLocalizedMessage());
                     }

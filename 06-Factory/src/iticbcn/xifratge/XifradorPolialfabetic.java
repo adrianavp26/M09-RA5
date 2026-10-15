@@ -1,36 +1,18 @@
 package iticbcn.xifratge;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class XifradorPolialfabetic {
-    public static final String LLETRES = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
-    public static final char[] MAJUSCULES = LLETRES.toUpperCase().toCharArray();
-    public static final char[] PERMUTAT = new char[MAJUSCULES.length];
+public class XifradorPolialfabetic implements Xifrador{
+    public final String LLETRES = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
+    public final char[] MAJUSCULES = LLETRES.toUpperCase().toCharArray();
+    public final char[] PERMUTAT = new char[MAJUSCULES.length];
 
-    private static final long clauSecreta = 3333L;
 
-    public static Random random;
-    public static void main(String[] args) {
-        String msgs[]= {"Test 01 àrbitre, coixí, Perímetre", 
-                        "Test 02 Taüll, DÍA", "Test 03 Peça, Òrrius, Bòvila"};
-        String msgsXifrats[] = new String[msgs.length];
+    public Random random;
 
-        System.out.println("Xifratge:\n-----------");
-        for (int i = 0; i < msgs.length; i++) {
-            initRandom(clauSecreta);
-            msgsXifrats[i] = xifraPoliAlfa(msgs[i]);
-            System.out.printf("%-34s -> %s%n", msgs[i], msgsXifrats[i]);
-        }
-        System.out.println("Desxifratge:\n-----------");
-        for (int i = 0; i < msgs.length; i++) {
-            initRandom(clauSecreta);
-            String msg = desxifraPoliAlfa(msgsXifrats[i]);
-            System.out.printf("%-34s -> %s%n", msgsXifrats[i], msg);
-        }
-    }
-
-    public static int buscarLletra(char lletra, char[] alfabet){
+    public int buscarLletra(char lletra, char[] alfabet){
         for (int i = 0; i < alfabet.length; i++) {
             if(alfabet[i] == lletra){
                 return i;
@@ -39,12 +21,12 @@ public class XifradorPolialfabetic {
         return -1;
     }
     //random new random 
-    public static void initRandom(long clau){
+    public void initRandom(long clau){
         random = new Random(clau);
     }
 
     //permutar
-    private  static void permutaAlfabet(){
+    private void permutaAlfabet(){
 
         ArrayList<Character> lista = new ArrayList<>();
         for(char caracter : MAJUSCULES){
@@ -58,7 +40,7 @@ public class XifradorPolialfabetic {
     }
 
 
-    public static String xifraPoliAlfa(String msg){
+    public String xifraPoliAlfa(String msg){
         String resultat = "";
         int indice;
 
@@ -82,7 +64,7 @@ public class XifradorPolialfabetic {
         return resultat;
     }
 
-    public static String desxifraPoliAlfa(String msg){
+    public String desxifraPoliAlfa(String msg){
         String resultat = "";
         int indice;
 
@@ -104,5 +86,32 @@ public class XifradorPolialfabetic {
         }
 
         return resultat;
+    }
+
+    @Override 
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada{
+        long element;
+        try{
+            element = Long.parseLong(clau);
+        }catch(NumberFormatException e){
+            throw new ClauNoSuportada("La clau per xifrar Polialfabetic ha de se run String convertible a long");
+        }
+        initRandom(element);
+        String xifra = xifraPoliAlfa(msg);
+        byte[] bytes = xifra.getBytes(StandardCharsets.UTF_8);
+        return new TextXifrat(bytes);
+    }
+
+    @Override 
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada{
+        long element;
+        try {
+            element = Long.parseLong(clau);
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("La clau per xifrar Polialfabetic ha de se run String convertible a long");
+        }
+        initRandom(element);
+        String text = xifrat.toString();
+        return  desxifraPoliAlfa(text);
     }
 }
