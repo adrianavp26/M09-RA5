@@ -1,6 +1,7 @@
 package iticbcn.xifratge;
 
 import java.security.KeyPair;
+
 import javax.xml.bind.DatatypeConverter;
 
 
@@ -11,7 +12,7 @@ public class Main {
         String msg = "Missatge de prova per xifrar áéíóú àèìòù äëïöü";
 
         KeyPair parellClaus = cp.generaParellClausRSA();
-        byte[] msgXifrat = cp.xifratRSA(msg, parellClaus.getPublic());
+        byte[] msgXifrat = cp.xifraRSA(msg, parellClaus.getPublic());
 
         System.out.println("===================================");
         System.out.println("Text xifrat: ");
