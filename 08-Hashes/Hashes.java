@@ -72,7 +72,7 @@ public class Hashes {
         String charset = "abcdefABCDEF1234567890!";
         int n = charset.length();
 
-        for (int longitud = 1; longitud <= 6; longitud++) {
+        for (int longitud = 6; longitud >= 1; longitud--) {
             for(int i0 = 0; i0 < n; i0++){
                 if(i0 > 0 && longitud < 1)continue;
                 for (int i1 = 0; i1 < n; i1++) {
